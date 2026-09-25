@@ -8,7 +8,7 @@
 
 | Skill | 干什么 | 什么时候触发 |
 |---|---|---|
-| `supervisor-session` | 总管的完整工作准则：冻结基线、单一总账、拆卡派发、只读巡检、合入、测试分层、汇报、开收工自查 | 用户指定某个会话当总管／监察／管理者，要它统筹而不是亲自干活 |
+| `supervisor-session` | 总管的完整工作准则：冻结基线、单一总账、拆卡派发、多级分管、只读巡检、合入、测试分层、汇报、开收工自查 | 用户指定某个会话当总管／监察／管理者，要它统筹而不是亲自干活 |
 | `decision-briefing` | 需要用户拍板或同步进展时的固定五段格式，让对方不必追问就能决策 | 汇报进展、提「要不要做 X」「A 还是 B」、用户问「这是什么／到哪一步了／为什么卡着」 |
 | `progress-review-and-dispatch` | 批量盘点在推进的事项，按目标分组、按动作路由定档，报完立刻把动作做掉 | 巡检产出跨线汇总、「该派的都派了吗」「哪些能立刻部署」 |
 
@@ -44,8 +44,8 @@ cp -R skills/* ~/.codex/skills/
 ## 这套东西的三条核心主张
 
 1. **总管的产出是任务书、判据、裁决与合入，不是实现。** 发现自己在写实现代码就停下，改成派卡。
-2. **一切状态只读获取，非必要不打扰任何会话。** 能从 git、读数文件、会话记录里读到的，一律不发消息问——发消息会重启空闲会话、污染读数。
-3. **测试分层。** 实现会话只跑轻量验证，重测试（集成、端到端、浏览器、真模型验收）统一由总管串行做，否则多条线同时起栈会压垮机器。
+2. **一切状态只读获取，非必要不打扰任何会话。** 能从 git、读数文件、会话记录里读到的，一律不发消息问——发消息会重启空闲会话、污染读数。会话之间只在任务完成、阻塞、确定纠正等必要时刻通知彼此，不回「收到」「好的」这类回执。
+3. **测试分层。** 实现会话只跑轻量验证，重测试（集成、端到端、浏览器、真模型验收）全工程一把锁串行做（总管与各级分管共用），否则多条线同时起栈会压垮机器。
 
 ---
 
@@ -61,7 +61,7 @@ The same files work in both **Claude Code** and **Codex CLI**: both look for a d
 
 | Skill | What it does | When it fires |
 |---|---|---|
-| `supervisor-session` | The full supervisor playbook: freeze the baseline, keep one ledger, split and dispatch work, patrol read-only, merge, tier the testing, report, and run open/close checklists | The user puts a session in charge of a big effort and tells it to coordinate rather than implement |
+| `supervisor-session` | The full supervisor playbook: freeze the baseline, keep one ledger, split and dispatch work, delegate clusters to sub-supervisors, patrol read-only, merge, tier the testing, report, and run open/close checklists | The user puts a session in charge of a big effort and tells it to coordinate rather than implement |
 | `decision-briefing` | A fixed five-part shape for anything the user has to decide, so they can rule on it without a round of follow-up questions | Reporting progress, "should we do X", "A or B", "what is this / where does it stand / why is it stuck" |
 | `progress-review-and-dispatch` | Sweep everything in flight, bucket each item by the action it needs, then actually take those actions | Cross-workstream status sweeps, "did everything that should be dispatched get dispatched", "what can ship now" |
 
@@ -95,5 +95,5 @@ Concrete numbers left in the text (retry ceilings and the like) are illustrative
 ## Three claims at the core
 
 1. **A supervisor's output is task briefs, criteria, rulings, and merges — not code.** Catch yourself writing implementation code and stop; turn it into a dispatched task instead.
-2. **Get state read-only; don't interrupt sessions unless you must.** Anything readable from git, report files, or session records is never worth a message — messaging wakes idle sessions and pollutes the readings.
-3. **Tier the testing.** Implementation sessions run only lightweight checks; heavy testing (integration, end-to-end, browser, real-model acceptance) is run serially by the supervisor, or parallel stacks will crush the machine.
+2. **Get state read-only; don't interrupt sessions unless you must.** Anything readable from git, report files, or session records is never worth a message — messaging wakes idle sessions and pollutes the readings. Sessions notify each other only at necessary moments — done, blocked, a confirmed correction, or any other moment you judge necessary — and never send acknowledgements like "got it" or "understood".
+3. **Tier the testing.** Implementation sessions run only lightweight checks; heavy testing (integration, end-to-end, browser, real-model acceptance) is run serially under one project-wide lock shared by the supervisor and any sub-supervisors, or parallel stacks will crush the machine.
