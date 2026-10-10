@@ -30,6 +30,10 @@ cp -R skills/* ~/.codex/skills/
 
 只给某个项目用，就放进该仓库的 `.claude/skills/`（Claude Code）。装完重开会话，问一句「你是这次移植的总管，先说说你打算怎么派活」就能验证是否加载。
 
+## 可选钩子
+
+`hooks/sub-supervisor-title-mark.py`（Claude Code）：派出分管会话时，标题要以「！」开头，方便在很长的会话列表里找到分管。任务书写了分管的身份声明、标题却没带标记时，钩子拦下这次派发并说明原因，由总管自己改标题重派。不装也行，skill 正文和自查清单里都有这条。装法见 `skills/supervisor-session/references/runtime-map.md` 末尾。
+
 ## 落地前要填的空
 
 下面这些位置写的是占位符，用之前替换成你们自己的值：
@@ -80,6 +84,10 @@ cp -R skills/* ~/.codex/skills/
 ```
 
 Restart the session, then ask something like "you're the supervisor for this migration — how would you start?" to confirm the skill loads.
+
+## Optional hook
+
+`hooks/sub-supervisor-title-mark.py` (Claude Code): sub-supervisor sessions get a title starting with "！" so you can spot them in a long session list. If a brief contains the sub-supervisor identity line but the title lacks the mark, the hook blocks that dispatch and says why; the supervisor fixes the title itself and dispatches again. It is optional: the rule is also in the skill body and its checklist. Setup is at the end of `skills/supervisor-session/references/runtime-map.md`.
 
 ## Fill in the blanks
 

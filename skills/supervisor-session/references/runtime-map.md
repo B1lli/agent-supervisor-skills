@@ -12,6 +12,21 @@
 | 对话缓存时长（算巡检间隔用） | 以宿主说明为准；开了一小时缓存的是 60 分钟 | 以所用模型服务的缓存规则为准 | 不知道就按 50 分钟巡检 |
 | 只读查某条线的进展 | 会话列表／记录检索工具 | 读 `~/.codex/sessions` 下的会话记录；`codex resume` 的选择器可列出会话 | `git log`／`git status`／读数文件的 mtime |
 | 撤回还没开始的任务 | 撤回任务卡 | 无对应命令：删掉任务书、不启动那条线 | 同左 |
+| 查某条会话距上次对话多久（判断唤醒划不划算） | 会话详情里的最近活动时间；桌面版会话列表也有 | 看 `~/.codex/sessions` 里该会话记录的最后修改时间 | 看那条线最后一次提交或读数文件的时间 |
+| 派分管时检查标题带没带分管标记 | 可选：派发工具的 PreToolUse 钩子，见仓库 `hooks/sub-supervisor-title-mark.py`（只认分管任务书里「你是 <类> 的分管，按 supervisor-session skill 工作」这句身份声明，缺标记就拦下并说明原因，其余一律放行） | 无钩子，靠自查清单 | 靠自查清单 |
 | 定时巡检 | 会话内定时 + 宿主的定时任务 | `cron` 起一条 `codex exec` | 人工设闹钟 |
 
 **不管哪个宿主，三条不变**：干活线必须是独立会话（不是只读子代理），进展靠只读获取（不靠发消息问），重测试全工程一把锁串行跑（总管与各级分管共用）。
+
+## 可选钩子：分管标题标记（Claude Code）
+
+`hooks/sub-supervisor-title-mark.py` 在派发新会话之前检查：任务书里有「你是 <类> 的分管，按 supervisor-session skill 工作」这句身份声明、标题却不以「！」开头时，拦下这次派发，把原因和建议标题还给总管，由总管自己改标题重派。它不改写任何输入，脚本出错也一律放行。装法：把脚本放进 `~/.claude/hooks/`，在 `~/.claude/settings.json` 的 `hooks.PreToolUse` 里加一条，`matcher` 填你这版宿主里「派发新会话」那个工具的名字（要求它的入参里有 `title` 字段；没有的话钩子什么都不做）：
+
+```json
+{
+  "matcher": "<派发新会话的工具名>",
+  "hooks": [{ "type": "command", "command": "python3 \"$HOME/.claude/hooks/sub-supervisor-title-mark.py\"", "timeout": 5 }]
+}
+```
+
+想换别的标记，改脚本里的 `MARK`，并同步改 skill 正文里的例子。
